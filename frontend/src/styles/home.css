@@ -1,0 +1,9 @@
+.mainContainer{
+    height: 100vh;
+    background-size: 15em;
+}
+
+.Title{
+    font-size: 50px;
+    margin-top: 0px;
+}
