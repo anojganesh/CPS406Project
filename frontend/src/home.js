@@ -1,30 +1,28 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import './styles/home.css';
+import "./styles/home.css";
 
 const Home = (props) => {
   const { loggedIn, email } = props;
   const navigate = useNavigate();
 
   const onButtonClick = () => {
-    // You'll update this function later
+    navigate('/login') //take to login page on button click
   };
 
   return (
-    <div className="mainContainer" style={{ backgroundImage: "url(/background.jpg)"}}>
+    <div className="mainContainer">
       <div className={"titleContainer"}>
-        <h1 className="Title">Welcome!</h1>
+        <h1 className="Title">Club Membership Portal</h1>
       </div>
-      <div className="Subtitle">This is the home page.</div>
+      <br></br>
       <div className={"buttonContainer"}>
         <input
-          
           className={"inputButton"}
           type="button"
           onClick={onButtonClick}
           value={loggedIn ? "Log out" : "Log in"}
         />
-        {loggedIn ? <div>Your email address is {email}</div> : <div />}
       </div>
     </div>
   );
