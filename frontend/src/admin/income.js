@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import "../styles/admin.css"; // Ensure CSS is properly linked
+import "../styles/admin.css";
 
-// Define the MonthlyReceipt component
 const MonthlyReceipt = () => {
   const [transactions, setTransactions] = useState([]);
   const [itemName, setItemName] = useState("");
@@ -12,9 +11,13 @@ const MonthlyReceipt = () => {
     total_expenses: 0,
     profit: 0,
   });
+  const [userId, setUserId] = useState("");
+  const [message, setMessage] = useState("");
+  const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
     fetchIncomeStatement();
+    fetchTransactions();
   }, []);
 
   const fetchIncomeStatement = () => {
@@ -29,11 +32,38 @@ const MonthlyReceipt = () => {
       );
   };
 
+  const fetchTransactions = () => {
+    Promise.all([
+      fetch("http://localhost:5000/api/revenues"),
+      fetch("http://localhost:5000/api/expenses"),
+    ])
+      .then(([revenueResponse, expenseResponse]) =>
+        Promise.all([revenueResponse.json(), expenseResponse.json()])
+      )
+      .then(([revenueData, expenseData]) => {
+        const unifiedTransactions = [
+          ...revenueData.map((item) => ({
+            ...item,
+            type: "Revenue",
+            category: item.source,
+          })),
+          ...expenseData.map((item) => ({
+            ...item,
+            type: "Expense",
+            category: item.category,
+          })),
+        ];
+        setTransactions(unifiedTransactions);
+      })
+      .catch((error) => console.error("Error fetching transactions:", error));
+  };
+
   const addTransaction = () => {
     const data = {
-      date: new Date().toISOString().slice(0, 10), // Format YYYY-MM-DD
-      source: itemName, // Use itemName as source or category based on type
-      amount: cost,
+      date: new Date().toISOString().slice(0, 10),
+      source: itemName,
+      amount: parseFloat(cost),
+      category: itemName,
     };
 
     const endpoint =
@@ -50,12 +80,41 @@ const MonthlyReceipt = () => {
       .then((response) => response.json())
       .then((data) => {
         console.log("Transaction added:", data);
-        fetchIncomeStatement(); // Refresh the income statement after adding a transaction
+        fetchIncomeStatement();
+        fetchTransactions();
         setItemName("");
         setCost("");
         setType("revenue");
       })
       .catch((error) => console.error("Error adding transaction:", error));
+  };
+
+  const sendMessage = (type) => {
+    const msg =
+      message ||
+      (type === "lesson"
+        ? "Your lesson fee is unpaid."
+        : "Your monthly fee is unpaid.");
+    const notification = {
+      userId: userId,
+      message: msg,
+    };
+
+    fetch("http://localhost:5000/send_message", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(notification),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Message sent:", data);
+        setNotifications((prev) => [...prev, notification]);
+        setUserId("");
+        setMessage("");
+      })
+      .catch((error) => console.error("Error sending message:", error));
   };
 
   return (
@@ -80,54 +139,35 @@ const MonthlyReceipt = () => {
         </select>
         <button onClick={addTransaction}>Add Transaction</button>
       </div>
+
+      <div className="tabletrans">
+        <table className="transaction-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Type</th>
+              <th>Source/Category</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            {transactions.map((transaction, index) => (
+              <tr key={index}>
+                <td>{transaction.date}</td>
+                <td>{transaction.type}</td>
+                <td>{transaction.category}</td>
+                <td>${transaction.amount}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
       <div className="income-statement">
         <p>Total Revenue: ${incomeStatement.total_revenue}</p>
         <p>Total Expenses: ${incomeStatement.total_expenses}</p>
         <p>Profit: ${incomeStatement.profit}</p>
       </div>
-    </div>
-  );
-};
-
-// Admin component including notifications
-const Admin = () => {
-  const [userId, setUserId] = useState("");
-  const [message, setMessage] = useState("");
-  const [notifications, setNotifications] = useState([]);
-
-  const sendMessage = (type) => {
-    const msg =
-      message ||
-      (type === "lesson"
-        ? "Your lesson fee is unpaid."
-        : "Your monthly fee is unpaid.");
-    const notification = {
-      userId: userId,
-      message: msg,
-    };
-
-    // Assuming a backend API endpoint /send_message
-    fetch("http://localhost:5000/send_message", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(notification),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Message sent:", data);
-        setNotifications((prev) => [...prev, notification]); // Optionally update UI with sent notification
-        setUserId("");
-        setMessage("");
-      })
-      .catch((error) => console.error("Error sending message:", error));
-  };
-
-  return (
-    <div className="admin-container">
-      <h1>Admin Dashboard</h1>
-      <MonthlyReceipt />
       <div className="messaging-section">
         <h2>Send Message to User</h2>
         <input
@@ -160,4 +200,4 @@ const Admin = () => {
   );
 };
 
-export default Admin;
+export default MonthlyReceipt;

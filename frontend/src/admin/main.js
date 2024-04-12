@@ -1,12 +1,12 @@
 import React from "react";
-import IncomeStatement from "./income";
+import MonthlyReceipt from "./income";
 import AttendanceForm from "./attendance";
 
 const MainPage = () => {
   return (
     <div>
       <h1>Club Finances Dashboard</h1>
-      <IncomeStatement />
+      <MonthlyReceipt />
       <AttendanceForm></AttendanceForm>
     </div>
   );

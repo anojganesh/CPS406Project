@@ -15,8 +15,8 @@ db = SQLAlchemy(app)
 #member classes
 
 class Member(db.Model):
-    id = db.Column(db.String(100), primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    user_name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), nullable=False)
     password = db.Column(db.String(100), nullable=False)
     credit_card_info = db.Column(db.String(100))  # Placeholder for encryption/tokenization methods
@@ -28,7 +28,7 @@ class Class(db.Model):
 
 class Attendance(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    member_id = db.Column(db.Integer, db.ForeignKey('member.id'), nullable=False)
+    member_id = db.Column(db.String(100), db.ForeignKey('member.id'), nullable=False)
     date = db.Column(db.DateTime, default=datetime.now)
     paid = db.Column(db.Boolean, default=False)
 
@@ -65,9 +65,11 @@ with app.app_context():
 
 @app.route('/api/attendance', methods=['POST'])
 def record_attendance():
-    data = request.json
+    data = request.get_json()
     attendance = Attendance(member_id=data['member_id'], paid=False)
     db.session.add(attendance)
+    new_revenue = Revenue(date=datetime.strptime(data['date'], '%Y-%m-%d'), source='Member class pay - {}'.format(data['member_id']), amount=50)
+    db.session.add(new_revenue)
     db.session.commit()
     return jsonify({'message': 'Attendance recorded'}), 201
 
@@ -78,7 +80,7 @@ def get_classes():
 
 @app.route('/api/enroll', methods=['POST'])
 def enroll_class():
-    data = request.json
+    data = request.json()
     enrollment = Enrollment(member_id=data['memberId'], class_id=data['classId'])
     db.session.add(enrollment)
     db.session.commit()
@@ -99,6 +101,16 @@ def add_expense():
     db.session.add(new_expense)
     db.session.commit()
     return jsonify({"message": "Expense added successfully"}), 201
+
+@app.route('/api/revenues', methods=['GET'])
+def get_revenues():
+    revenues = Revenue.query.all()
+    return jsonify([{'id': r.id, 'date': r.date.strftime('%Y-%m-%d'), 'source': r.source, 'amount': r.amount} for r in revenues])
+
+@app.route('/api/expenses', methods=['GET'])
+def get_expenses():
+    expenses = Expense.query.all()
+    return jsonify([{'id': e.id, 'date': e.date.strftime('%Y-%m-%d'), 'category': e.category, 'amount': e.amount} for e in expenses])
 
 @app.route('/income_statement', methods=['GET'])
 def get_income_statement():
