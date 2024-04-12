@@ -26,6 +26,10 @@ function App() {
             path="/login"
             element={<Login setLoggedIn={setLoggedIn} setEmail={setEmail} />}
           />
+          <Route
+            path="/member"
+            element={<Login setLoggedIn={setLoggedIn} setEmail={setEmail} />}
+          />
         </Routes>
       </BrowserRouter>
     </div>

@@ -15,7 +15,7 @@
 .subContainer{
     background: linear-gradient(to bottom, #338afd, #79c3ff, #b0d1fc);
     width: 350px;
-    height: 400px;
+    height: fit-content;
     border: 2px solid black;
     border-radius: 5px;
     padding: 15px;
@@ -30,13 +30,18 @@
     padding-bottom: 5px;
 }
 .inputText{
-    height: 30px;
+    height: 35px;
     border: 2px solid black;
     margin: 5px;
     margin-top: 20px;
     padding-left: 14px;
     padding-right: 14px;
+    width: 220px;
     
+}
+
+.username{
+    margin-top: 10px;
 }
 
 .Title{
@@ -56,11 +61,12 @@
   font-weight: 600;
   margin: 0 10px;
   margin-top: 40px;
-  width: 200px;
+  width: 250px;
   padding: 10px 0;
   box-shadow: 0 0 20px rgba(104, 85, 224, 0.2);
   transition: 0.4s;
   border: 2px solid black;
+  margin-bottom: 40px;
 }
 
 .inputButton:hover{
@@ -68,4 +74,17 @@
   
   box-shadow: 0 0 20px rgba(194, 186, 250, 0.3);
   background-color: rgb(156, 141, 255);
+}
+
+.loginfail {
+    background: linear-gradient(to bottom, #f58989, #fc9e94, #f8cdcb);
+    border: 2px solid black;
+    border-radius: 10px;
+    width: 250px;
+    margin: auto;
+    display: none;
+}
+
+.loginfailtext{
+    padding: 0px 10px;
 }
