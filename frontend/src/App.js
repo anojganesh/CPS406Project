@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Home from "./home";
-import Login from "./login";
+
 import "./styles/App.css";
+import MainPage from "./admin/main";
 import { useEffect, useState } from "react";
 
 function App() {
@@ -12,24 +12,7 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Routes>
-          <Route
-            path="/"
-            element={
-              <Home
-                email={email}
-                loggedIn={loggedIn}
-                setLoggedIn={setLoggedIn}
-              />
-            }
-          />
-          <Route
-            path="/login"
-            element={<Login setLoggedIn={setLoggedIn} setEmail={setEmail} />}
-          />
-          <Route
-            path="/member"
-            element={<Login setLoggedIn={setLoggedIn} setEmail={setEmail} />}
-          />
+          <Route path="/" element={<MainPage />} />
         </Routes>
       </BrowserRouter>
     </div>
