@@ -18,6 +18,7 @@ const MonthlyReceipt = () => {
   useEffect(() => {
     fetchIncomeStatement();
     fetchTransactions();
+    fetchMessages();
   }, []);
 
   const fetchIncomeStatement = () => {
@@ -30,6 +31,23 @@ const MonthlyReceipt = () => {
       .catch((error) =>
         console.error("Error fetching income statement:", error)
       );
+  };
+
+  const fetchMessages = () => {
+    fetch("http://localhost:5000/api/messages/")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Fetched messages:", data);
+        setNotifications(data); // Assuming the data format aligns with how notifications are displayed
+      })
+      .catch((error) => {
+        console.error("Error fetching messages:", error);
+      });
   };
 
   const fetchTransactions = () => {
@@ -88,7 +106,6 @@ const MonthlyReceipt = () => {
       })
       .catch((error) => console.error("Error adding transaction:", error));
   };
-
   const sendMessage = (type) => {
     const msg =
       message ||
@@ -96,7 +113,7 @@ const MonthlyReceipt = () => {
         ? "Your lesson fee is unpaid."
         : "Your monthly fee is unpaid.");
     const notification = {
-      userId: userId,
+      user_name: userId, // Changed from 'userId' to 'user_name' to align with the backend
       message: msg,
     };
 
@@ -110,7 +127,10 @@ const MonthlyReceipt = () => {
       .then((response) => response.json())
       .then((data) => {
         console.log("Message sent:", data);
-        setNotifications((prev) => [...prev, notification]);
+        setNotifications((prev) => [
+          ...prev,
+          { ...notification, date: new Date().toISOString() },
+        ]); // Assuming date handling on the frontend for immediate feedback
         setUserId("");
         setMessage("");
       })
@@ -188,13 +208,26 @@ const MonthlyReceipt = () => {
           Send Unpaid Monthly Fee Message
         </button>
       </div>
-      <div className="notifications-container">
-        <h2>Notifications</h2>
-        {notifications.map((notification, index) => (
-          <div key={index} className="notification">
-            User ID: {notification.userId} - Message: {notification.message}
-          </div>
-        ))}
+      <div className="message-table-container">
+        <h2>Message Log</h2>
+        <table className="message-table">
+          <thead>
+            <tr>
+              <th>User Name</th>
+              <th>Message</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {notifications.map((notification, index) => (
+              <tr key={index}>
+                <td>{notification.user_name}</td>
+                <td>{notification.message}</td>
+                <td>{new Date(notification.date).toLocaleDateString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

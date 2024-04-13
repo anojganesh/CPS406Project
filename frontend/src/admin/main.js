@@ -7,7 +7,6 @@ const MainPage = () => {
     <div>
       <h1>Club Finances Dashboard</h1>
       <MonthlyReceipt />
-      <AttendanceForm></AttendanceForm>
     </div>
   );
 };

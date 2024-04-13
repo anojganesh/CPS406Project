@@ -1,7 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 function AttendanceForm() {
   const [memberId, setMemberId] = useState("");
+  const [attendanceRecords, setAttendanceRecords] = useState([]);
+
+  // Load attendance records from localStorage when the component mounts
+  useEffect(() => {
+    const storedRecords = localStorage.getItem("attendanceRecords");
+    if (storedRecords) {
+      setAttendanceRecords(JSON.parse(storedRecords));
+    }
+  }, []);
 
   const data = {
     date: new Date().toISOString().slice(0, 10),
@@ -18,8 +27,12 @@ function AttendanceForm() {
       body: JSON.stringify(data),
     });
     if (response.ok) {
+      const newRecord = { date: data.date, memberId: data.member_id };
+      const updatedRecords = [...attendanceRecords, newRecord];
+      setAttendanceRecords(updatedRecords);
+      localStorage.setItem("attendanceRecords", JSON.stringify(updatedRecords)); // Save updated records to localStorage
+      setMemberId(""); // Clear the input field after submission
       alert("Attendance recorded");
-      window.location.reload();
     } else {
       const text = await response.text();
       alert(`Failed to record attendance: ${text}`);
@@ -41,6 +54,27 @@ function AttendanceForm() {
         </label>
         <button type="submit">Record Attendance</button>
       </form>
+      {attendanceRecords.length > 0 && (
+        <div>
+          <h4>Attendance Records</h4>
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Member ID</th>
+              </tr>
+            </thead>
+            <tbody>
+              {attendanceRecords.map((record, index) => (
+                <tr key={index}>
+                  <td>{record.date}</td>
+                  <td>{record.memberId}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }

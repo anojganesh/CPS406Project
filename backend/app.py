@@ -55,36 +55,39 @@ class Expense(db.Model):
 
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, nullable=False)
+    user_name = db.Column(db.String(100), nullable=False)
     message = db.Column(db.String(500), nullable=False)
-    date = db.Column(db.Date, default=datetime.utcnow)
+    date = db.Column(db.Date, default=datetime.now)
 
 with app.app_context():
     db.create_all()
 
 
-@app.route('/api/attendance', methods=['POST'])
+@app.route('/attendance', methods=['POST'])
 def record_attendance():
     data = request.get_json()
-    attendance = Attendance(member_id=data['member_id'], paid=False)
+    attendance = Attendance(member_id=data['member_id'], paid=True)
     db.session.add(attendance)
     new_revenue = Revenue(date=datetime.strptime(data['date'], '%Y-%m-%d'), source='Member class pay - {}'.format(data['member_id']), amount=50)
     db.session.add(new_revenue)
     db.session.commit()
     return jsonify({'message': 'Attendance recorded'}), 201
 
+@app.route('/api/attendance_records', methods=['GET'])
+def get_attendance_records():
+    try:
+        # Fetch all attendance records from the database
+        records = Attendance.query.all()
+        records_data = [{'memberId': record.member_id, 'date': record.date.strftime('%Y-%m-%d')} for record in records]
+        return jsonify(records_data)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
 @app.route('/api/classes', methods=['GET'])
 def get_classes():
     classes = Class.query.all()
     return jsonify([{'id': c.id, 'title': c.title, 'schedule': c.schedule} for c in classes])
-
-@app.route('/api/enroll', methods=['POST'])
-def enroll_class():
-    data = request.json()
-    enrollment = Enrollment(member_id=data['memberId'], class_id=data['classId'])
-    db.session.add(enrollment)
-    db.session.commit()
-    return jsonify({'message': 'Enrolled successfully!'})
 
 @app.route('/revenues', methods=['POST'])
 def add_revenue():
@@ -129,10 +132,16 @@ def get_income_statement():
 @app.route('/send_message', methods=['POST'])
 def send_message():
     data = request.get_json()
-    new_message = Message(user_id=data['userId'], message=data['message'])
+    new_message = Message(user_name=data['user_name'], message=data['message'], date=datetime.utcnow())  # Ensure the date is updated correctly
     db.session.add(new_message)
     db.session.commit()
     return jsonify({"message": "Message sent successfully"}), 201
+
+@app.route('/api/messages/', methods=['GET'])
+def get_all_messages():
+    messages = Message.query.all()
+    return jsonify([{'id': m.id, 'user_name': m.user_name, 'message': m.message, 'date': m.date.strftime('%Y-%m-%d %H:%M:%S')} for m in messages])
+
 
 if __name__ == '__main__':
     print("Current working directory:", os.getcwd())
