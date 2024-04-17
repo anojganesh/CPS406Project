@@ -8,7 +8,7 @@ from datetime import datetime
 import os
 import uuid 
 
-app = Flask(__name__, static_folder='CPS406Project-main/frontend/build', static_url_path='')
+app = Flask(__name__, static_folder='frontend/build', static_url_path='')
 CORS(app)
 
 CORS(app, resources={"/*": {"origins": ["http://localhost:3000", "http://localhost:3001", "http://localhost:5000"]}})
