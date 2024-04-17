@@ -15,7 +15,7 @@ const Login = (props) => {
     };
 
     try {
-      const response = await fetch("http://localhost:5000/validate", {
+      const response = await fetch("/validate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

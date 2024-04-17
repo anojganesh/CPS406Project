@@ -24,7 +24,7 @@ const MonthlyReceipt = () => {
 
   const fetchExpenses = async () => {
     try {
-      const response = await fetch("http://localhost:5000/getexpenses", {
+      const response = await fetch("/getexpenses", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -85,7 +85,7 @@ const MonthlyReceipt = () => {
   const fetchRevenues = async () => {
     try {
       // Fetch revenues data
-      const revenuesResponse = await fetch("http://localhost:5000/getrevenue", {
+      const revenuesResponse = await fetch("/getrevenue", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -97,15 +97,12 @@ const MonthlyReceipt = () => {
       const revenuesData = await revenuesResponse.json();
 
       // Fetch payments data
-      const paymentsResponse = await fetch(
-        "http://localhost:5000/getallpayments",
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const paymentsResponse = await fetch("/getallpayments", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       if (!paymentsResponse.ok) {
         throw new Error("Failed to fetch payments");
       }
@@ -143,10 +140,7 @@ const MonthlyReceipt = () => {
       category: itemName,
     };
 
-    const endpoint =
-      type === "revenue"
-        ? "http://localhost:5000/revenues"
-        : "http://localhost:5000/expenses";
+    const endpoint = type === "revenue" ? "/revenues" : "/expenses";
     fetch(endpoint, {
       method: "POST",
       headers: {

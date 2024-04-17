@@ -14,7 +14,7 @@ const Member = (props) => {
     const fetchDataAndBuildTable = async () => {
       try {
         console.log("called 1 time");
-        const response = await fetch("http://localhost:5000/getpayments", {
+        const response = await fetch("/getpayments", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -57,7 +57,7 @@ const Member = (props) => {
         } else {
           console.log("No payments data received");
         }
-        const response2 = await fetch("http://localhost:5000/getattendance", {
+        const response2 = await fetch("/getattendance", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
