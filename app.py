@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask_migrate import Migrate
 from sqlalchemy import func
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 from datetime import datetime
 import os
 import uuid 
@@ -19,8 +19,17 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///club_finances.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+
+@app.route('/api', methods=['GET'])
+@cross_origin()
+def index():
+    return {
+        "server": "Flask React Heroku"
+    }
 #member classes
 
+@app.route('/')
+@cross_origin()
 def serve():
     return send_from_directory(app.static_folder, 'index.html')
 
