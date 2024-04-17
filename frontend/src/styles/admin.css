@@ -1,0 +1,66 @@
+.receipt-container {
+    background: linear-gradient(to bottom, #70acfa, #a3d5f6, #c8eefa);
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center content horizontally */
+}
+
+.transaction-table {
+    background-color: white; /* Change 'white' to any color you prefer */
+    border-collapse: collapse;
+    table-layout: fixed; /* Optional: Use fixed table layout for consistent column widths */
+    width: 100%;
+}
+
+.transaction-table th,
+.transaction-table td {
+    padding: 8px;
+    text-align: left;
+    border: 1px solid black; /* Add border to table cells */
+}
+
+.tabletrans {
+    height: 600px; /* Set the desired height for the table */
+    width: calc(80%); /* Ensure the table container takes full width */
+    margin-bottom: 20px; /* Add some bottom margin for spacing */
+    overflow-y: scroll;
+    border: 2px solid black;
+}
+
+input, select, button {
+    margin-bottom: 20px; /* Adjust margin for input elements */
+}
+
+h1{
+    margin: 0;
+    padding-bottom: 20px;
+}
+
+.title {
+    margin: 0px;
+    padding-bottom: 30px;
+    font-size: 40px;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+input{
+    width: 200px;
+    height: 25px;
+    padding: 5px;
+}
+
+select {
+    width: 150px;
+    height: 39px;
+}
+
+button {
+    width: 150px;
+    height: 39px;
+}
+
+input, select, button {
+    margin-bottom: 50px;
+}
