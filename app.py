@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask_migrate import Migrate
 from sqlalchemy import func
-from flask_cors import CORS, cross_orgin
+from flask_cors import CORS
 from datetime import datetime
 import os
 import uuid 
